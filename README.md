@@ -45,7 +45,7 @@ struct ContentView: View {
             Text("Item 1")
             Text("Item 2")
         }
-        .pullToRefresh(isRefreshing: $isRefreshing, viewType: .list) {
+        .pullToRefresh(isRefreshing: $isRefreshing) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.isRefreshing = false
             }
