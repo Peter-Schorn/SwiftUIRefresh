@@ -1,23 +1,16 @@
 import SwiftUI
 import Introspect
 
-public enum ViewType {
-    case scrollView, list
-}
-
 private struct PullToRefresh: UIViewRepresentable {
     
     @Binding var isRefreshing: Bool
     let onRefresh: () -> Void
-    let viewType: ViewType
     
     public init(
         isRefreshing: Binding<Bool>,
-        viewType: ViewType,
         onRefresh: @escaping () -> Void
     ) {
         self._isRefreshing = isRefreshing
-        self.viewType = viewType
         self.onRefresh = onRefresh
     }
     
@@ -46,27 +39,6 @@ private struct PullToRefresh: UIViewRepresentable {
         view.isUserInteractionEnabled = false
         return view
     }
-    
-    // MARK: - Table View -
-    private func tableView(entry: UIView) -> UITableView? {
-        
-        // Search in ancestors
-        if let tableView = Introspect.findAncestor(
-            ofType: UITableView.self, from: entry
-        ) {
-            return tableView
-        }
-
-        guard let viewHost = Introspect.findViewHost(from: entry) else {
-            return nil
-        }
-
-        // Search in siblings
-        return Introspect.previousSibling(
-            containing: UITableView.self, from: viewHost
-        )
-    }
-
     
     // MARK: - Scroll View -
     private func scrollView(entry: UIView) -> UIScrollView? {
@@ -142,7 +114,6 @@ extension View {
     - Parameters:
       - isRefreshing: True if view is currently refreshing,
             else false.
-      - viewType: Either `.scrollView` or `.list`.
       - onRefresh: A closure that gets called
             when the user pulls down to refresh the view.
             When this happens, `isRefreshing` gets set to true.
@@ -152,14 +123,12 @@ extension View {
     */
     public func pullToRefresh(
         isRefreshing: Binding<Bool>,
-        viewType: ViewType,
         onRefresh: @escaping () -> Void
     ) -> some View {
         
         return overlay(
             PullToRefresh(
                 isRefreshing: isRefreshing,
-                viewType: viewType,
                 onRefresh: onRefresh
             )
             .frame(width: 0, height: 0)
