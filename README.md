@@ -39,15 +39,15 @@ import SwiftUIRefresh
 
 struct ContentView: View {
     
-    @State private var isShowing = false
+    @State private var isRefreshing = false
     var body: some View {
         List {
             Text("Item 1")
             Text("Item 2")
         }
-        .pullToRefresh(isShowing: $isShowing) {
+        .pullToRefresh(isRefreshing: $isRefreshing, viewType: .list) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.isShowing = false
+                self.isRefreshing = false
             }
         }
     }
